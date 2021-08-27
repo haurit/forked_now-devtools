@@ -14,7 +14,7 @@
         <sys_update_name>sys_atf_test_suite_test_890a2f741b78d410a89720a8ec4bcb61</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2020-11-23 15:29:56</sys_updated_on>
-        <test display_value="DevTools - TestDataAPI">820a6f741b78d410a89720a8ec4bcb44</test>
+        <test display_value="DevTools - TestDataAPI - ITSM">820a6f741b78d410a89720a8ec4bcb44</test>
         <test_suite display_value="DevTools">4a8550391b5b8850a89720a8ec4bcbd9</test_suite>
     </sys_atf_test_suite_test>
 </record_update>
