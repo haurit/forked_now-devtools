@@ -135,12 +135,91 @@ function DevToolsGetFormatConfig(grRecord)
 	<g2:no_escape>$[docapi.RenderLicense()]</g2:no_escape>
 	
 	<h2>Release Notes</h2>
+	
 <!--
-	<h3>1.3_.0 - 2022-0_</h3>
+	<h3>1.4_.0 - 2022-0_</h3>
 	<ol>
 		<li>TODO</li>
 	</ol>
--->
+-->	
+	
+	<h3>1.44.0 - 2022-09-18</h3>
+	<ol>
+		<li>Added function HtmlRenderScriptUrl().</li>
+		<li>Added function HtmlRenderWarning().</li>
+		<li>Added function HtmlRenderInfo().</li>
+		<li>The message rendered by HtmlRenderError() now looks like the usual ServiceNow error message.</li>
+	</ol>	
+	
+	<h3>1.43.0 - 2022-09-17</h3>
+	<ol>
+		<li>Added function GetVariablesFromRecord().</li>
+		<li>Added function SetCurrentScope().</li>
+		<li>Added function HtmlRenderError().</li>
+		<li>Added function HtmlRenderScript().</li>
+		<li>Added function IsPascalCase().</li>
+		<li>Added function DocumentationAPI::RenderEditorMacros().</li>
+		<li>Function GetTableFromSysId() is now public and hence added to the manual.</li>
+		<li>Function GetPseudoSysId() is now public and hence added to the manual.</li>
+		<li>Function GlideRecordAddQuery() is now public and hence added to the manual.</li>
+		<li>Added UI script function DoModalMessage() to display a message in a modal dialog.</li>
+		<li>Added UI script function DoModalConfirm() to ask the user for confirmation using a modal dialog.</li>
+		<li>Added UI script function DoModalPrompt() to ask the user for a text input using a modal dialog.</li>
+		<li>Added UI script function GetGlideDialogClass().</li>
+		<li>Added UI script function HtmlEncode().</li>
+		<li>Added a widget dependency and JS includes to use the DoModal* functions in portal widgets.</li>
+		<li>Added table sys_ui_action_view to the link directory.</li>
+		<li>Added tables sys_ws_definition and sys_ws_operation to the link directory.</li>
+		<li>Added tables sc_item_option and sc_item_option_mtom to the link directory.</li>
+		<li>Added business rule on sys_metadata to set the user's current scope to the scope of the record that is displayed.</li> 
+		<li>The "Save" UI action is now aware of the limitations to define a UI Action View (rule) in one scope referring to a UI Action from a different scope and displays the background script workaround.</li> 
+		<li>GetParentRecord() and the "Up" UI action now support records in sys_ui_action_view and return the related sys_ui_action record.</li>
+		<li>GetParentRecord() and the "Up" UI action now support records in sc_item_option and sc_item_option_mtom and return the related records.</li>
+		<li>GetParentRecord() and the "Up" UI action now support records in sys_ws_operation and returns the sys_ws_definition record.</li>
+		<li>Added macro for AppBuilder().</li>
+	</ol>	
+	
+	<h3>1.42.0 - 2022-08-11</h3>
+	<ol>
+		<li>Added UI action "Parent Table" to navigate from a list view to the parent table list view (if the table has a parent).</li> 
+		<li>Added function StringFindMultiple() to get all the indexes of all occurences of a needle string in a haystack string.</li>
+		<li>Added function GetStackTrace() to get the raw stack trace as a string.</li>
+		<li>Added function GetCallStack() to get the call stack in a structured format.</li>
+		<li>Added function GetScriptRecord() to get the record that contains the script from which GetScriptRecord() is called.</li>
+		<li>TestAPI::TestCase_InstanceScanCheck() now outputs the record summary for the test case.</li>
+		<li>RenderValue() now supports the bCompactOutput parameter which uses RenderRecordSummary() for GlideRecord objects.</li>
+		<li>GetParentRecord() and subsequently the "Up" UI action now support records in derived tables.</li>
+		<li>GetParentRecord() now supports records in sys_metadata and returns the scope/app record.</li>
+		<li>TestAPI::TestCase() now supports the bCompactOutput parameter which uses RenderRecordSummary() for GlideRecord objects.</li>
+		<li>RenderRecordSummary() shows the api_name for sys_script_include records.</li>
+		<li>Added UI script functions IsForm() and IsList().</li>
+		<li>Added UI script functions GetCurrentRecordTableName() and GetCurrentRecordSysId().</li>
+		<li>Added sys_ux_theme and cmn_cost_center tables to the link directory.</li>
+		<li>Debug output is now prefixed by "DEBUG". The "Debug Log" module now ONLY shows debug output.</li>
+	</ol>
+	
+	
+	<h3>1.41.0 - 2022-07-19</h3>
+	<ol>
+		<li>Added function RecordSaveToUpdateSet() and updated the UI action "Baseline version" to make use of it.</li>
+		<li>Added function GetPseudoSysId() to get a VERY unlikely but valid Sys Id for testing purposes.</li> 
+		<li>Added table db_image, sys_ux_client_script, sys_ux_client_script_include to the link directory.</li>
+		<li>Added tables from package "Product Inventory Advanced" to the link directory.</li>
+		<li>ATF test "DevTools - HtmlRenderImage" is now using an image that is shipped with the DevTools application.</li>
+	</ol>
+	
+	<h3>1.40.0 - 2022-07-07</h3>
+	<ol>
+		<li>RedirectToRecord() now supports the view parameter.</li>
+		<li>Added UI action "Show Table Dictionary Record".</li>
+		<li>Added UI action "Baseline Version" to support the baseline of an application version.</li>
+		<li>UI action "Save" now maintains the current view.</li>
+		<li>UI action "Up" now maintains the current view.</li>
+		<li>UI action "List" maintains the current view.</li>
+		<li>GetParentRecord() now supports cmn_location, sys_ui_related_list and sys_ui_related_list_entry.</li>
+		<li>TestDataAPI now supports Service Portal widgets.</li>
+		<li>Added sp_page and sp_widget to the link directory.</li>
+	</ol>
 
 	<h3>1.39.0 - 2022-06-11</h3>
 	<ol>
@@ -847,13 +926,13 @@ gs.invalidateCache();
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2020-02-27 11:17:42</sys_created_on>
         <sys_id>e44fd7541b578450a89720a8ec4bcb8c</sys_id>
-        <sys_mod_count>832</sys_mod_count>
+        <sys_mod_count>901</sys_mod_count>
         <sys_name>manual</sys_name>
         <sys_package display_value="DevTools" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="DevTools">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_ui_page_e44fd7541b578450a89720a8ec4bcb8c</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2022-06-11 18:11:33</sys_updated_on>
+        <sys_updated_on>2022-09-18 14:05:58</sys_updated_on>
     </sys_ui_page>
 </record_update>
