@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_script">
+    <sys_ui_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description>The function encapsulates a glide modal dialog using the "simple_progress_viewer" template. The function renders a progress dialog and triggers an ajax request that starts a worker process.</description>
+        <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
+        <name>x_snc_devtools.DoModalProgress</name>
+        <script><![CDATA[function DoModalProgress(strTitle,strProgressTitle,strScriptInclude,params,buttons,callbacks)
+{
+	strTitle = GetStringValue(strTitle);
+	strProgressTitle = GetStringValue(strProgressTitle);
+	strScriptInclude = GetStringValue(strScriptInclude);
+
+	var callbackOnExecutionComplete = null;
+	var callbackOnExecutionFailed = null;
+	var callbackOnStatusUpdate = null;
+
+	if (IsFunction(callbacks) == true)
+	{
+		callbackOnExecutionComplete = callbacks;
+	}
+	else
+	{
+		if (IsObject(callbacks))
+		{
+			var callback = GetValue(callbacks,'callbackOnExecutionComplete');
+			if (IsFunction(callback) == true)
+			{
+				callbackOnExecutionComplete = callback;
+			}
+			var callback = GetValue(callbacks,'callbackOnExecutionFailed');
+			if (IsFunction(callback) == true)
+			{
+				callbackOnExecutionFailed = callback;
+			}
+			var callback = GetValue(callbacks,'callbackOnStatusUpdate');
+			if (IsFunction(callback) == true)
+			{
+				callbackOnStatusUpdate = callback;
+			}
+		}
+	}
+
+	
+	
+	var Dialog = GetGlideDialogClass();
+	var dialog = new Dialog("simple_progress_viewer", true, "40em", "10em");
+	
+	dialog.setTitle(strTitle);
+    dialog.setPreference('sysparm_renderer_progress_title', strProgressTitle);
+	
+    dialog.setPreference('sysparm_ajax_processor', strScriptInclude);
+	var aParams = GetKeys(params);
+	for (var nParam = 0; nParam < aParams.length; nParam++)
+	{
+		var strParam = aParams[nParam];
+		dialog.setPreference('sysparm_ajax_processor_'+strParam, GetStringValue(GetValue(params,strParam)));
+	}
+
+	var aButtons = GetKeys(buttons);
+	for (var nButton = 0; nButton < aButtons.length; nButton++)
+	{
+		var strButton = aButtons[nButton];
+		dialog.setPreference('sysparm_button_'+strButton, GetStringValue(GetValue(buttons,strButton,'title')));
+	}
+		
+    dialog.on('executionStarted', function(response)
+	{
+		var result = response.responseXML.documentElement.getAttribute('answer');
+		if (result == '')
+		{
+			if (IsFunction(callbackOnExecutionFailed) == true)
+			{
+				callbackOnExecutionFailed(dialog);
+			}
+		}
+    });
+    
+    dialog.on("renderStatus", function()
+	{
+		if (IsFunction(callbackOnStatusUpdate) == true)
+		{
+			callbackOnStatusUpdate(dialog);
+		}
+    });	
+	
+	
+    dialog.on("executionComplete", function(tracker)
+	{
+		if (IsFunction(callbackOnExecutionComplete) == true)
+		{
+			callbackOnExecutionComplete(dialog,tracker);
+		}
+    });
+	
+	dialog.on("beforeclose", function()
+	{
+		reloadWindow(window); // Reload current form after closing the progress viewer dialog
+	});
+    
+    dialog.render();	
+	
+}]]></script>
+        <script_name>DoModalProgress</script_name>
+        <sys_class_name>sys_ui_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-11-27 17:20:32</sys_created_on>
+        <sys_id>202e4363db575d106a03dad1f39619db</sys_id>
+        <sys_mod_count>14</sys_mod_count>
+        <sys_name>x_snc_devtools.DoModalProgress</sys_name>
+        <sys_package display_value="DevTools WORK IN PROGRESS" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="DevTools WORK IN PROGRESS">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
+        <sys_update_name>sys_ui_script_202e4363db575d106a03dad1f39619db</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-11-29 20:17:10</sys_updated_on>
+        <ui_type>0</ui_type>
+        <use_scoped_format>false</use_scoped_format>
+    </sys_ui_script>
+</record_update>
