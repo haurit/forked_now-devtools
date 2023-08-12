@@ -80,8 +80,8 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 	<h3>UI Actions</h3>
 	<p>DevTools contains a number of very helpful UI Actions. One of the most powerful features is the "Save" button with active scope switching capabilities. Never ever loose changes because of switching between scopes and browser tabs at the same time.</p>
 	
-	<h3>Cross-scope Scripting</h3>
-	<p>The function&#160;<a href="/nav_to.do?uri=sys_script_include.do?sys_id=cc44a1c91b4b7450edf3642aab4bcb13" target="_blank">RunScriptInScope</a>&#160;allows to execute code in any scope no matter what the current execution scope is. The function&#160;<a href="/nav_to.do?uri=sys_script_include.do?sys_id=7303bde9db30a410ba15a35305961968" target="_blank">RunScriptInGlobalScope</a>&#160;specifically allows code execution in the global scope from any other other scope. This allows the use of API functions and classes which are only available in the global scope and NOT in scoped scripts. This allows more flexibility when developing scoped apps - and effectively removes any barriers between apps. The authors of DevTools believe that this is a good thing. Application scopes are NOT a security boundary. Scoped APIs have just not been implemented completely - so using these techniques serves as a workaround for incomplete scoped API implementation. It also allows scoped apps to interact with each other which would otherwise be impossible. We also believe that deployments via update sets are a method of the past. Features should always be deployed as part of scoped (or global scoped) applications via source control or AppRepo. This however requires such apps to perform installation steps - like manipulations of OOTB records - which would not be possible from within their own scope. Hence cross-scope scripting techniques finally enable fully automated deployment pipelines without the need of any manual interventions.</p>
+	<h3>Cross Scope Scripting</h3>
+	<p>The function&#160;<a href="/nav_to.do?uri=sys_script_include.do?sys_id=cc44a1c91b4b7450edf3642aab4bcb13" target="_blank">RunScriptInScope</a>&#160;allows to execute code in any scope no matter what the current execution scope is. The function&#160;<a href="/nav_to.do?uri=sys_script_include.do?sys_id=7303bde9db30a410ba15a35305961968" target="_blank">RunScriptInGlobalScope</a>&#160;specifically allows code execution in the global scope from any other other scope. This allows the use of API functions and classes which are only available in the global scope and NOT in scoped scripts. This allows more flexibility when developing scoped apps - and effectively removes any barriers between apps. The authors of DevTools believe that this is a good thing. Application scopes are NOT a security boundary. Scoped APIs have just not been implemented completely - so using these techniques serves as a workaround for incomplete scoped API implementation. It also allows scoped apps to interact with each other which would otherwise be impossible. We also believe that deployments via update sets are a method of the past. Features should always be deployed as part of scoped (or global scoped) applications via source control or AppRepo. This however requires such apps to perform installation steps - like manipulations of OOTB records - which would not be possible from within their own scope. Hence cross scope scripting techniques finally enable fully automated deployment pipelines without the need of any manual interventions.</p>
 	
 	<h3>Dependency Management</h3>
 	<p>In an ideal world all customizations are implemented in scoped apps (and some global scoped apps if there are really good reasons). And in that same ideal world, non of these apps have any dependencies. Each app can be installed and uninstalled independently. The real corporate world, however, is complex, messy and full of dependencies. For good reasons, separate capablities are implemented as separate apps and hence these apps have dependencies to each other. For example: apps add fields to tables that are defined in other apps, they run scripts from other apps, or rely on logic implemented in flows from other apps.</p>
@@ -117,12 +117,20 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 	<p>The business rule &#160;<a href="/nav_to.do?uri=sys_script.do?sys_id=b7fad21a1be06d105b76777d8b4bcbbe" target="_blank">sys_metadata - Prevent useless checks</a>&#160;prevents checks from running in such cases which may significantly reduce the time required to scan such records - or apps that contain such records.</p>
 	
 	<h3>Create User by Email</h3>
-	<p>DevTools brings the "Create User by Email" button to the User list. Follow these steps to configure the feature:</p>
+	<p>DevTools features the "Create User by Email" button to the User list. Follow these steps to configure the feature:</p>
 	<ol>
 		<li>Set the DevTools system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=6f6bf0961b92a150cd6153d16b4bcb14" target="_blank">ui.createuserbyemail_button</a>&#160;to "true".</li> 
 		<li>Create the GLOBAL system property "devtools.createuserbyemail.groups" and add a comma separated list of group Sys IDs to be assigned to the new users if needed.</li>
 	</ol>
 
+	<h3>Create and Send Credentials</h3>
+	<p>DevTools features the "Generate and Send Credentials" button to the User form. Follow these steps to configure the feature:</p>
+	<ol>
+		<li>Set the DevTools system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=128efb851b6a2110cd6153d16b4bcbc9" target="_blank">ui.generateandsendcredentials_button</a>&#160;to "true".</li> 
+		<li>Verify that the GLOBAL system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=856303e90a0a0bc50164129959388444" target="_blank">glide.email.smtp.active</a>&#160;is set to "true".</li>
+	</ol>
+	
+	
 	<h3>Field Formatting</h3>
 	<p>DevTools can help to format (float) numbers in forms, related lists and list views in the classic UI - Polaris, however, is not supported yet! Follow these steps to activate the feature:</p>
 	<ol>
@@ -194,6 +202,67 @@ function DevToolsGetFormatConfig(grRecord)
 		<li>TODO</li>
 	</ol>
 -->	
+	
+	<h3>1.65.0 - 2023-07-25</h3>
+	<ol>
+		<li>Dependencies now contain the "Reason" field to document why the application is required.</li>
+		<li>Dependencies now contain the "Package Class" field so that plugins, custom applications and store apps can be recognized.</li>
+		<li>Added function GetAppCurrentBranch().</li>
+		<li>Application page now shows the current branch in the overview table.</li>
+		<li>Added function GetProperties().</li>
+		<li>Added function GetFunctions().</li>
+		<li>Added function BindAllFunctionsToThis().</li>
+		<li>Added function HtmlRenderOrderedList().</li>
+		<li>Added function HtmlRenderUnorderedList().</li>
+		<li>Added function GetCurrentRecord().</li>
+		<li>Added function GetCurrentUrl.</li>
+		<li>Added function GetDependencyTreeErrorCount().</li>
+		<li>Added ATF for ImageAPI. This marks full formal test coverage.</li>
+		<li>GitHubAPI::GetFilesFromBranch() now delivers an array of path names (instead of the objects returned by the GitHub API).</li> 
+		<li>GitLabAPI::GetFilesFromBranch() now delivers an array of path names (instead of the objects returned by the GitLab API).</li> 
+		<li>GetParentRecord() and the "Up" button now also support cmn_schedule_span.</li>
+		<li>Improved ImageAPI by using bind() for GetPixel() and SetPixel() to make sure "this" is resolved properly.</li> 
+		<li>Improved syntax editor macro for AppBuilder.</li>
+		<li>Improved boilerplate GetPipelineInstanceName() function created by AppBuilder().</li>
+		<li>InstanceReset() now deactivates the popup for user consent for usage analytics.</li>
+		<li>AppBuilder() created te LogWarning() function using gs.error() instead of gs.warn(). This has been fixed.</li>
+		<li>HtmlRenderDependencies() no longer displays the number of dependencies if the package is not installed.</li>
+	</ol>	
+	
+	<h3>1.64.0 - 2023-06-16</h3>
+	<ol>
+		<li>Added GetDependencyListFromTree() and refactored GetPackageDependencyList() to use it.</li>
+		<li>Added UI Script IsValidUrl().</li>
+		<li>Added method InstallerAPI::RecordDelete().</li>
+		<li>"Global" can no longer be selected as a dependency.</li>
+		<li>InstallerAPI::RecordInsertOrUpdate() now supports setting the sys_id for a new record explicitly.</li>
+		<li>InstallerAPI functions now consistently logs "No action required" in case there is no action required.</li>
+		<li>GetParentRecord() and the "Up" button now also supports item_option_new and sys_schema_attribute_m2m.</li>
+		<li>UI Script Log() now uses console.log() since jslog() is no longer supported.</li>
+		<li>AppSanity() deleted roles asociated to an ACL erroneously if more than one role is associated to an ACL. This has been fixed.</li>
+		<li>AppSanity() eventually deleted valid ACLs for create or delete operations which were not of type "record". This has been fixed.</li>
+		<li>AppSanity() now deletes all records in sys_push_notif_app_install associated to the given app.</li>
+		<li>AppSanity() now deletes records erroneously created in the application scope due to issues with PA Dashboards documented in KB0814656.</li>
+		<li>ParseXml() can now deal with xml encoded line breaks.</li>
+	</ol>
+
+	<h3>1.63.0 - 2023-06-02</h3>
+	<ol>
+		<li>Added function GetVersionFromString().</li>
+		<li>Added function GetLength().</li>
+		<li>RecordInsert() can now set the Sys ID explicitly.</li>
+		<li>GlideRecordSetValue() can now also be used to set the Sys ID if the newRecord() function has been used on the record.</li>
+		<li>GitLabAPI::GetFilesFromBranch() now supports branches with more than approx. 100 files.</li>
+		<li>GitLabAPI and GitHubAPI now count the number of requests and support the ::GetRequestCount() function to return the count.</li>
+		<li>SetAppRepo() now also sets the repo url in the application record and in all dependency records.</li>
+		<li>Added ATF test for UpdateSetDelete().</li>
+		<li>ScriptGetFunctionNames() now also works outside InstanceScan checks. Additional ATF test cases have been added.</li>
+		<li>AppBuilder() now creates LogError() and LogWarning() functions.</li>
+		<li>AppBuilder() now creates navigation modules for the application log filtered by scope instead of the message containing the application name.</li>
+		<li>Function CreateUserByEmail() now sets the user name to all lower case letters.</li>
+		<li>Added section "Create and Send Credentials" to the manual.</li>
+	</ol>
+	
 	<h3>1.62.0 - 2023-05-03</h3>
 	<ol>
 		<li>Removed deprecated table "x_snc_devtools_technical_dept".</li>
@@ -1333,13 +1402,13 @@ gs.invalidateCache();
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2020-02-27 11:17:42</sys_created_on>
         <sys_id>e44fd7541b578450a89720a8ec4bcb8c</sys_id>
-        <sys_mod_count>1235</sys_mod_count>
+        <sys_mod_count>1293</sys_mod_count>
         <sys_name>manual</sys_name>
         <sys_package display_value="DevTools" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="DevTools">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_ui_page_e44fd7541b578450a89720a8ec4bcb8c</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2023-05-03 20:34:45</sys_updated_on>
+        <sys_updated_on>2023-07-25 15:48:22</sys_updated_on>
     </sys_ui_page>
 </record_update>
