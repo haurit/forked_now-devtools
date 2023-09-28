@@ -21,6 +21,14 @@ InstallerAPI.prototype = {
 			this.m_strContext = strContext + ': ';
 		}
 		this.m_strLog = '\n'+this.m_strContext+'Installation BEGIN\n';
+		
+		var strLegacyMode = gs.getProperty('glide.record.legacy_cross_scope_access_policy_in_script');
+		if (strLegacyMode != 'true')
+		{
+			this.FatalError('The system property "glide.record.legacy_cross_scope_access_policy_in_script" must be set to true during DevTools installation!');
+			return;
+		}
+		
 		if (strContext != '')
 		{
 			var cache = new TransactionCacheAPI('INSTALLER');
@@ -31,6 +39,7 @@ InstallerAPI.prototype = {
 			}
 			cache.SetItem(strContext,true);
 		}
+		
     },
 	
 	IsAborting: function()
@@ -76,6 +85,10 @@ InstallerAPI.prototype = {
 	
 	GenericAction: function(vResult,strLogSuccess,strLogError)
 	{
+		if (this.IsAborting() == true)
+		{
+			return false;
+		}		
 		if (vResult == false)
 		{
 			this.Error(strLogError);
@@ -121,7 +134,7 @@ InstallerAPI.prototype = {
 		GlideRecordQuery(grRecord);
 		if (grRecord.getRowCount() > 1)
 		{
-			this.Error(strTopic+': There is more than one record matching the specified query. Doing nothing!');
+			this.Error(strTopic+': There is more than one record matching the specified query. No action required.');
 			return false;
 		}
 		if (grRecord.next())
@@ -129,7 +142,7 @@ InstallerAPI.prototype = {
 			var aKeys = GetKeys(valuesUpdate);
 			if (aKeys.length == 0)
 			{
-				this.Log(strTopic+': Record exists. Doing nothing!');
+				this.Log(strTopic+': Record exists. No action required.');
 				return true;
 			}
 			else
@@ -154,6 +167,7 @@ InstallerAPI.prototype = {
 		values = Merge(values,valuesUpdate);
 
 		grRecord.initialize();
+		grRecord.newRecord();
 		GlideRecordSetValues(grRecord,values);
 		var strSysId = GlideRecordInsert(grRecord);
 		if (IsValidSysId(strSysId) == false)
@@ -167,6 +181,10 @@ InstallerAPI.prototype = {
 	
 	RecordSetValue: function(strTopic,strTable,strSysId,strField,vValue)
 	{
+		if (this.IsAborting() == true)
+		{
+			return false;
+		}		
 		var vResult = RecordSetValue(strTable,strSysId,strField,vValue);
 		if (vResult == false)
 		{
@@ -176,6 +194,34 @@ InstallerAPI.prototype = {
 		this.Log(strTopic+': Set record '+strTable+': '+strSysId+' value "'+strField+'" to: '+RenderValue(vValue));
 		return true;
 	},
+	
+	RecordDelete: function(strTopic,strTable,strSysId)
+	{
+		if (this.IsAborting() == true)
+		{
+			return false;
+		}
+		
+		var grRecord = GetRecord(strTable,strSysId);
+		if (grRecord == false)
+		{
+			this.Log(strTopic+': Record '+strTable+' / '+strSysId+' does not exist. No action required.');
+			return true;
+		}
+		
+		var bResult = RecordDelete(strTable,strSysId);
+		if (bResult == true)
+		{
+			this.Log(strTopic+': Deleted record: '+strTable+' / '+strSysId);
+		}
+		else
+		{
+			this.Error(strTopic+': Failed to delete record: '+strTable+' / '+strSysId);
+			return false;
+		}
+		return true;
+	},	
+		
 	
 	CheckTableCrossScopeAccessibility: function(strTable)
 	{
@@ -216,6 +262,33 @@ InstallerAPI.prototype = {
 			this.Error('Failed to set system property '+strProperty+' to "'+strValue+'".');
 			return false;
 		}
+	},
+	
+	SetHomePage: function(strUri)
+	{
+		this.SetProperty('glide.login.home',strUri);
+		this.SetProperty('glide.home.page',strUri);
+
+		var strUrl = GetInstanceURL() + 'nav_to.do?uri='+ strUri;
+		
+		this.RecordInsertOrUpdate(
+			'Set home page',
+			'sys_ui_page',
+			{
+				name: 'home',
+				sys_scope: 'global'
+			},
+			{},
+			{
+				html:
+					'<?xml version="1.0" encoding="utf-8" ?>\n'+
+					'<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">\n'+
+					'\t<g2:no_escape>$[\n'+
+					'\t\tx_snc_devtools.HtmlRenderRedirect(\''+strUrl+'\');\n'+
+					'\t]</g2:no_escape>\n'+	
+					'</j:jelly>\n'
+			});		
+		
 	},
 	
 	SetTableAttribute: function(strTable,strAttributeName,strAttributeValue)
@@ -373,6 +446,7 @@ InstallerAPI.prototype = {
 
 		var grSPCM2 = new GlideRecord('sys_properties_category_m2m');
 		grSPCM2.initialize();
+		grSPCM2.sys_scope = grSPC.sys_scope;
 		grSPCM2.category = strSystemPropertyCategorySysId;
 		grSPCM2.property = strSystemPropertySysId;
 		grSPCM2.order = nOrder;
@@ -427,6 +501,11 @@ InstallerAPI.prototype = {
 		return this.ActivateRecord(strSysId,bActive,'sysrule_view','View Rule','active','name');
 	},			
 	
+	ActivateACL: function(strSysId,bActive)
+	{
+		return this.ActivateRecord(strSysId,bActive,'sys_security_acl','Access Control','active','name','operation');
+	},			
+	
 	ShowFieldClass: function(strName,bVisible)
 	{
 		if (this.IsAborting() == true)
@@ -475,7 +554,7 @@ InstallerAPI.prototype = {
 		var grRecord = GetRecord(strTable,strSysId);
 		if (IsValidRecord(grRecord) == false)
 		{
-			this.Log(strRecordClassName+' with sys_id "'+strSysId+'" does not exist. Doing nothing.');
+			this.Log(strRecordClassName+' with sys_id "'+strSysId+'" does not exist. No action required.');
 			return false;
 		}
 		
@@ -525,7 +604,7 @@ InstallerAPI.prototype = {
 		grUiElement.query();
 		if (grUiElement.getRowCount() > 0)
 		{
-			this.Log('UI Section on table "'+strTable+'" with sys_id "'+strUiSectionSysId+'" already contains field "'+strField+'". Doing nothing.');
+			this.Log('UI Section on table "'+strTable+'" with sys_id "'+strUiSectionSysId+'" already contains field "'+strField+'". No action required.');
 			return false;
 		}
 
@@ -563,13 +642,13 @@ InstallerAPI.prototype = {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2021-08-27 10:49:10</sys_created_on>
         <sys_id>704694a81b1a74505331b8449b4bcb69</sys_id>
-        <sys_mod_count>79</sys_mod_count>
+        <sys_mod_count>94</sys_mod_count>
         <sys_name>InstallerAPI</sys_name>
         <sys_package display_value="DevTools WORK IN PROGRESS" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy>protected</sys_policy>
         <sys_scope display_value="DevTools WORK IN PROGRESS">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_script_include_704694a81b1a74505331b8449b4bcb69</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2023-03-16 11:24:23</sys_updated_on>
+        <sys_updated_on>2023-09-23 13:03:03</sys_updated_on>
     </sys_script_include>
 </record_update>
