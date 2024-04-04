@@ -10,18 +10,16 @@
 <div style="padding-left: 20px;">
 <span style="visibility: hidden;">_CUT_HERE_</span>
 	<g2:no_escape>$[
-		var docapi = new DocumentationAPI('d689f6901bd38450a89720a8ec4bcbfd');
+		var docapi = new DocumentationAPI('x_snc_devtools');
 		docapi.RenderHeader();
 	]</g2:no_escape>
 	
 	<p>Welcome to DevTools - created and maintained by&#160;<a href="mailto:sascha.wildgrube@servicenow.com">Sascha Wildgrube</a>.</p>
 
+	<h2>Overview</h2> 
 	<g2:no_escape>$[
 		docapi.RenderDescription();  
-		]</g2:no_escape>		
-	
-	<h2>Overview</h2> 
-	<p>DevTools contains a number of&#160;<b>script includes</b>&#160;with useful javascript functions and classes like a GetType() function that really works. A few&#160;<b>UI improvements</b>&#160;like the Re-Test button in the test result form and&#160;<b>shortcuts</b>&#160;to various - sometimes hidden - views and system properties in your instance.</p>
+	]</g2:no_escape>	
 
 	<h2>Disclaimer</h2>
 	<g2:no_escape>$[docapi.RenderDisclaimer()]</g2:no_escape>	
@@ -32,7 +30,7 @@
 	<ul>
 		<g2:no_escape>$[
 			docapi.RenderSystemRequirements(
-				'Tokyo,Utah',
+				'Vancouver,Washington',
 				true,
 				AppGetDependencies());
 		]</g2:no_escape>	
@@ -40,12 +38,12 @@
 	
 	<h2>Installation</h2>
 	<ol>
+		<li style="color: red; font-weight: bold;">Set the system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=9e52826587120300cf2d5fb736cb0b7f" target="_blank">glide.record.legacy_cross_scope_access_policy_in_script</a>&#160;to "true".</li> 
 		<g2:no_escape>$[
 			docapi.RenderInstallationInstructionsImportFromSourceControl(
 				'DevTools',
 				'https://github.com/saschawildgrube/servicenow-devtools');
 		]</g2:no_escape>
-		<li style="color: red; font-weight: bold;">Set the system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=9e52826587120300cf2d5fb736cb0b7f" target="_blank">glide.record.legacy_cross_scope_access_policy_in_script</a>&#160;to "true".</li> 
 		<g2:no_escape>$[
 			docapi.RenderInstallationInstructionsAppInstall();
 		]</g2:no_escape>		
@@ -59,6 +57,7 @@
 -->		
 		<li>In case of errors:
 			<ol>
+				<li>If the test "DevTools - HttpRequest" fails this may indicate that the instance cannot establish an http connection to itself. This is be the case in some self-hosted environments and requires intervention by the teams responsible to configure the network around the instance.</li>
 				<li>In a domain separated instance it may be necessary to switch to the topmost domain to pass all tests.</li>
 				<li>If the test "DevTools - RunScriptInGlobalScope" fails: Retry after a few minutes. Some cross-scrope privileges will be set up during the first test run and might take a few minutes to be effective. The function RunScriptInGlobalScope() is used in many other functions, so do look into any other failed tests as long as this test fails.</li>
 				<li>Tests "DevTools - TestDataAPI": These scripts create various records (e.g. incidents, problems, etc.). If there are customizations in place that make additional fields mandatory, you may have to set up business rules to set these values - but only if the short description (or the corresponding field) starts with "_ATF_".</li>
@@ -85,7 +84,18 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 	<p>To enable cross scope scripting the system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=9e52826587120300cf2d5fb736cb0b7f" target="_blank">glide.record.legacy_cross_scope_access_policy_in_script</a>&#160;must be set to true. As of the release of this DevTools version the only publicly accessible documentation of the system property's behaviour can be found in the knowledge base article&#160;<a href="https://support.servicenow.com/kb?id=kb_article_view&amp;sysparm_article=KB0779287" target="_blank">KB0779287</a>.</p>
 	
 	<h3>Baseline Application Version</h3>
-	<p>The "Baseline Version" button on the application form can be used to prepare an application to be baselined. To baseline an application means to provide a new version of an application from a development environment to downstream instances or for public availability. The function AppVersionBaseline() is executed to perform a number of cleanup tasks.</p>
+	<p>The "Baseline Version" button on the application form is used to baseline an application version. To baseline an application means to provide a new version of an application from a development environment in a linked source control system. This enables installation to downstream instances or for public availability. The following steps are performed:</p>
+	<ol>
+		<li>Check if there are yet uncommitted changes</li>
+		<li>Check if a branch named after the set version already exists</li>
+		<li>Sanitize the app (using the DevTools' AppSanity() function)</li>
+		<li>Set defaults (using the the app's AppSetDefaults() function if it exists)</li>
+		<li>Perform application specific baseline activities (using the app's AppBaseline() function if it exists)</li>
+		<li>Remove the postfix "WORK IN PROGRESS" from the application name</li>
+		<li>Create a new branch named after the set version</li>
+		<li>Increase the minor version</li>
+		<li>Add the postfix "WORK IN PROGRESS" to the application name</li>
+	</ol>
 	
 	<h3>Dependency Management</h3>
 	<p>In an ideal world all customizations are implemented in scoped apps (and some global scoped apps if there are really good reasons). And in that same ideal world, non of these apps have any dependencies. Each app can be installed and uninstalled independently. The real corporate world, however, is complex, messy and full of dependencies. For good reasons, separate capablities are implemented as separate apps and hence these apps have dependencies to each other. For example: apps add fields to tables that are defined in other apps, they run scripts from other apps, or rely on logic implemented in flows from other apps.</p>
@@ -103,6 +113,14 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 	// Deactivate deprecated features
 }</pre>
 	<p>If the Technical Debt with the given id exists and the switch is set to true, the function returns true, otherwise false.</p>
+	
+	<h3>Evaluator Errors</h3>
+	<p>DevTools helps to surface evaluator errors (which are logged as warnings OOTB). The system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=439f16571b417510cd6153d16b4bcb80" target="_blank">x_snc_devtools.ui.show_evaluator_errors.minutes</a>&#160;controls whether and for how long evaluator errors should be displayed to admin users.</p>
+	
+	<h3>Force to Record Scope</h3>
+	<p>DevTools enforces to switch to the scope of the current record on a form. This prevents any situation in which a form was loaded in the correct scope, changes are being made, and lost because the user changed the scope in a different tab. The OOTB behavior is downright annoying. DevTools comes to the rescue. The system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=7b9d7bb2db3e11106a03dad1f3961901" target="_blank">x_snc_devtools.ui.force_scope</a>&#160;controls whether the scope should be changed when loading and saving a form. This may lead to some users being confused by the new (and unexpected) behavior - however, developers quickly become used to it and prefer the behavior over the OOTB behavior.</p>	
+	<h3>Instance Pipeline Names</h3>
+	<p>An instance has a technical name (sometimes matching the domain name, but not always). This technical name can be used to define logic that depends on the instance on which code is executed. However, this is not a good practise. In complex environments, where applications may be shared across multiple production instances, any logic that directly depends on a specific instance may cause problems. The DevTools extension point allows to implement the function DevToolsGetInstancePipelineName() which allows to map technical names to so-called pipeline names (e.g., "dev", "test" or "prod"). The function GetInstancePipelineName() can then be used to get the current instance pipeline name to build instance specific logic.</p>	
 	
 	<h3>Service Portal Deactivation</h3>
 	<p>DevTools allows you to deactivate specific Service Portals.</p>
@@ -134,6 +152,42 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 		<li>Verify that the GLOBAL system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=856303e90a0a0bc50164129959388444" target="_blank">glide.email.smtp.active</a>&#160;is set to "true".</li>
 	</ol>
 	
+	<h3>Record Transporter</h3>
+	<p>Data is managed on each instance and should not be "deployed". Code is part of applications and should be deployed as such.</p>
+	<p>However there are cases where the boundaries are blurry. If data records (i.e. records that are not in a table derived from sys_metadata) must be part of an application the Record Transporter comes to the rescue.</p>
+	<p>The Record Transporter allows to store any record that is not a sys_metadata derivative into a table that is. The table in which these records are stored is x_snc_devtools_transporter_record (which is derived from sys_metadata) and hence its records are captured as part of an application (in source control). Such records are associated to a Record Transporter Package (in table table x_snc_devtools_transporter_package).</p>
+	<p>To "pack" records into a Package, create a Package in the GUI - but make sure to select the scope of the application that should contain the package - then use the function RecordTransporterRecordPack() to store individual records into the package.</p>
+	<p>To properly "store" to be deleted records use the function RecordTransporterPackageReset() before adding records to a package. The function will mark all existing records in the package to be deleted on the target instance. Once added again, these records will be stored to the package to be inserted or updated. This allows to keep track on deleted records of earlier versions of the package.</p>
+	<p>During installation use the method InstallerAPI::RecordTransporterPackageUnpack() to unpack the contained records on the target instance.</p>
+	<p>Code to store records could look like this:
+		<pre>
+// To set all existing records as to-be-deleted
+x_snc_devtools.RecordTransporterPackageReset('x_your_scope.demo');
+			
+// Identify records based on whatever logic
+var grRecords = new GlideRecord('x_snc_devtools_test');
+grRecords.addQuery('name','STARTSWITH','Test ');
+grRecords.query();
+while (grRecords.next())
+{
+	// Pack the identified record into the package
+	x_snc_devtools.RecordTransporterRecordPack('x_your_scope.demo',grRecords);
+}
+		</pre>
+	</p>
+	
+	<p>To unpack records, implement the AppInstall() function in your app like this:
+		<pre>	
+function AppInstall()
+{
+	var installer = new x_snc_devtools.InstallerAPI(x_snc_devtools.GetAppName('x_your_scope'));
+	
+	installer.RecordTransporterPackageUnpack('x_your_scope.demo');			
+
+	return installer.Finish();
+}
+		</pre>
+	</p>
 	
 	<h3>Field Formatting</h3>
 	<p>DevTools can help to format (float) numbers in forms, related lists and list views in the classic UI - Polaris, however, is not supported yet! Follow these steps to activate the feature:</p>
@@ -169,6 +223,18 @@ function DevToolsGetFormatConfig(grRecord)
 		<li>You may consider session or transaction caching techniques to improve performance.</li>
 	</ol>
 	
+	<h3>Manage Record Order (Record Ranking)</h3>
+	<p>The function RecordManageOrder() can be used set the records in a table into a definitive sequence based on a given integer field. The function is designed to be called in an async after update/insert/delete business rule like this:</p>
+<pre>
+(function executeRule(current, previous /*null when async*/) {
+	
+	var RecordManageOrder = x_snc_devtools.RecordManageOrder;
+	RecordManageOrder('your_table', 'order', current ? current.sys_id : null, current ? current.order : null);
+
+})(current, previous);
+</pre>
+<p>"your_table" is the technical name of the table in which records should be sorted (or ranked). "order" is the name of the integer field that defines the ordering sequence.</p>
+<p>The "current" object is null in an after delete async business rule, hence the conditional statements.</p>
 	
 	<h2>Reference</h2>
 
@@ -199,19 +265,239 @@ function DevToolsGetFormatConfig(grRecord)
 	<g2:no_escape>$[docapi.RenderLicense()]</g2:no_escape>
 	
 	<h2>Release Notes</h2>
-	
-<!--
-	<h3>1.7_.0 - 2023-TODO</h3>
+
+	<h3>1.85.0 - TODO</h3>
 	<ol>
-		<li>TODO</li>
+		<li>TODO: Document changes here...</li>
 	</ol>
--->	
-	
-	<h3>1.71.0 - 2023-TODO</h3>
+
+
+	<h3>1.84.0 - 2024-03-31</h3>
 	<ol>
+		<li>The "Application Overview" page now also displays links to manual pages in global applications.</li>
+		<li>The "Version Baseline" button now also checks if there is a proper section in the "Release Notes" in the application manual before the actual baseline process is started.</li>
+		<li>AppVersionBaseline() now adds a new section in the manual "Release Notes" section (if it exists).</li>
+		<li>Added ArrayIntersection().</li>
+		<li>Added function GetAppManualRecord().</li>
+		<li>Added function AppVersionBaselineCheckReleaseNotes().</li>
+		<li>Added function SetValueIncrement().</li>
+		<li>Added UI Script GetTimeNow().</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+	</ol>
+
+	<h3>1.83.0 - 2024-03-08</h3>
+	<ol>
+		<li>Utah is no longer actively supported.</li>
+		<li>DevTools is fully tested in Washington.</li>
+		<li>The "Baseline Version" UI Action now really triggers the full-features application baseline procedure!</li> 
+		<li>Added link to an application's dependencies to the application overview page.</li>
+		<li>On the application overview page, the link to the manual page now loads with the navigation.</li>
+		<li>On the application overview page, the current branch now links to the repository.</li>
+		<li>The Dependency Tree view now displays the package class name for packages other than custom applications.</li> 
+		<li>InstallApp() now checks if any of the packages is not installed and returns an error in that case.</li>
+		<li>Added function GetAppUncommittedFiles().</li>
+		<li>Added function WaitForWorker().</li>
+		<li>Added function SourceControlCommitToCurrentBranch().</li>
+		<li>Added function SourceControlCreateBranch().</li>
+		<li>Added function SourceControlSwitchToBranch().</li>
+		<li>Added function AppVersionBaselineIsRunning().</li>
+		<li>Added function GetAppBranches().</li>
+		<li>UI Script function GetParameter() is deprecated and replaced by function GetParam().</li>
+		<li>Added UI Script function GetCurrentUrl().</li>
+		<li>Added method InstallerAPI::DocumentationSetValue() to set values in sys_documentation records.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>The UI Action "Baseline Version" is now only displayed on the application form if the application is linked to source control.</li>
+		<li>The UI action "Baseline Version" is only visible if the newly introduced system property "x_snc_devtools.ui.baseline_button" is true.</li>
+		<li>Improved ATF for ParseJson().</li>
+		<li>The UI Scripts GetInstanceRecordPath(), GetInstanceRecordUri(), GetInstanceNewRecordPath() and GetInstanceNewRecordUri() now support the "params" parameter to supply additonal parameters to the url.</li>
+		<li>The UI Script ServerRequest() now detects if the response from the server is null and shows an error message indicating that this may be caused by a server error which may not be logged.</li>
+	</ol>
+	
+	<h3>1.82.0 - 2024-02-29</h3>
+	<ol>
+		<li>Added function IsPolaris().</li>
+		<li>Added UI Script Reload().</li>
+		<li>Added UI Script IsFormDirty().</li>
+		<li>Added function IsClonedDictionary().</li>
+		<li>Added function StringMatchRegEx().</li>
+		<li>WhatRuns() now also supports Data Policies.</li>
+		<li>InstallApp() now only runs installation scripts (AppInstall) contained in custom applications.</li>
+		<li>InstallApp() no longer tries to execute inactive AppInstall() scripts.</li>
+		<li>HtmlRenderRoundedBox() is now fully aware of Polaris default and dark themes and U16 color schemes.</li> 
+		<li>GetTableFromSysId() now handles sys_documentation records properly.</li>
+		<li>GenerateAndSendCredentialsToUser() now returns false if the user record cannot be updated. This is the case if a user without security_admin priviliges tries to generate and send credentials for another security_admin user.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Added better logic to the business rule "sys_metadata - prevent useless checks" to avoid unnecessarily scanning any record in sys_dictionary or any derived table.</li>
+		<li>GetParam() now also checks gs.action for parameters.</li>
+		<li>Added function GetRecordUri() as a replacement of the deprecated GetInstanceRecordURI().</li>
+		<li>Added link to application log to the application overview page.</li>
+		<li>Added DevTools view for cmn_map_page.</li>
+		<li>Added DevTools view for sys_ui_policy.</li>
+	</ol>	
+	
+	<h3>1.81.0 - 2024-02-06</h3>
+	<ol>
+		<li>Added function GetAppDefaultTestSuite().</li>
+		<li>The application list ui page now also contains the link to the applications' default test suite if it exists.</li>
+		<li>Added UI Action "Go to Test Suite" to navigate to an application's default test suite from the application form if the test suite exists.</li>
+		<li>Fixed a defect in ScriptRemoveComments() that prevented multiple block comments to be removed properly.</li>
+		<li>Improved test cases for ScriptRemoveComments().</li>
+		<li>UI Actions "Create User By Email", "Create Technical User" and "Create Test User" sometimes did not show. This has been fixed. The UI Actions are now associated with the sys_user table directly and no longer use current.getRecordClassName() in the condition statement. current.getRecordClassName() returns the class name of the first displayed element in a list view instead of the table being displayed (which is at least questionable behaviour).</li> 
+	</ol>	
+	
+	<h3>1.80.0 - 2024-01-29</h3>
+	<ol>
+		<li>Added function HtmlRenderPreformatted().</li>
+		<li>Added function HtmlRenderTree().</li>
+		<li>Added the link to the Studio to the "DevTools Application Overview" page.</li>
+		<li>Improved the "Technical Debts" related list on the application form.</li>
+		<li>The "DevTools HTML Gallery" page now documents more HtmlRender* functions and is improved.</li>
+		<li>HtmlRenderRoundedBox() now considers whether polaris styles are available.</li>
+		<li>HtmlRenderValue() now uses the new function HtmlRenderPreformatted() internally and by that making sure that any html text contained in the rendered value is html encoded.</li>
+		<li>Improved documentation on troubleshooting when DevTools ATF tests fail.</li>
+	</ol>	
+	
+	<h3>1.79.0 - 2024-01-16</h3>
+	<ol>
+		<li>Added function StringStripTrailingSlash().</li>
+		<li>DevToolsWorkerAPI now supports InstallApp().</li>
+		<li>InstallApp() now uses ProgressTrackerAPI to communicate progress and produces a log entry that contains a summary of which scripts ran and if they ran successfully.</li>
+		<li>ProgressTrackerAPI detects if the execution context is an ATF test and in that case, does nothing. Reporting an error through the progress tracker may interfere with ATF test execution itself which also uses the progress tracker to communicate progress.</li>
+		<li>Clone() now supports the bSortKeys parameter to allow for sorted keys in cloned objects.</li>
+		<li>MakeJson() now always produces JSON strings with alphabetically sorted keys.</li>
+		<li>RecordTransporterRecordPack() now also produces JSON payloads in transport records with alphabetically sorted keys.</li>
+		<li>Improved documentation and syntax editor macro for RecordManageOrder().</li>
+		<li>The business rule "sys_metadata - prevent useless checks" now also prevents unnecessary checks on records in tables sys_hub_action_input and sys_hub_action_output.</li> 
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>GetTableFromSysId() now also considers table sys_progress_worker as a priority to find Sys IDs way faster.</li> 
+		<li>Added "Multi Factor Authentication" section to the link directory.</li>
+	</ol>	
+	
+	<h3>1.78.2 - 2023-12-14</h3>
+	<ol>
+		<li>Added Sleep() statements to ATF test "DevTools - sys_metadata - Prevent useless checks" to prevent flakyness.</li>
+	</ol>	
+	
+	<h3>1.78.1 - 2023-12-13</h3>
+	<ol>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Fixed a defect in RecordTransporterPackagePackTranslatedText() - the query parameter was not applied properly. This has been fixed.</li>
+	</ol>	
+	
+	<h3>1.78.0 - 2023-12-13</h3>
+	<ol>
+		<li>RecordTransporterPackagePackTranslatedText() now supports the "query" parameter to limit the sys_translated_text records to be scanned.</li>
+		<li>Added the "Description" field to the Record Transporter Package.</li>
+	</ol>	
+	
+	<h3>1.77.0 - 2023-12-06</h3>
+	<ol>
+		<li>Added function RecordInsertOrUpdate().</li>
+		<li>Added function MakeJson().</li>
+		<li>Added function GetInstanceUrl() as a replacement for the now deprecated GetInstanceURL().</li>
+		<li>ATF test for HttpRequest() now also validates that the instance can query itself.</li> 
+		<li>IsValidSysId() now considers the string "Default view" as a valid Sys ID.</li>
+		<li>Added sys_language and sys_translated_text to the link directory.</li>
+		<li>GetTableFromSysId() now also considers table sys_translated_text as a priority to find Sys IDs way faster.</li> 
+		<li>ATF test for GlideRecordAddQuery() would fail if there are existing records in the table. This has been fixed.</li>
+	</ol>	
+	
+	<h3>1.76.0 - 2023-11-29</h3>
+	<ol>
+		<li>Added function GetDiagnostics().</li>
+		<li>CreateTechnicalUser() now also sets a provided role and password.</li>
+		<li>GetParentRecord() and the "Up" button now also supports sys_ui_form.</li>
+		<li>GetParentRecord() and the "Up" button now also supports sysevent_email_action.</li>
+		<li>GetParentRecord() and the "Up" button now also supports sys_ws_query_parameter_map.</li>
+		<li>Added sys_notification_category to the link directory.</li>
+		<li>Corrected the description of the function GetInstancePipelineName().</li>
+		<li>Added missing system properties to the DevTools system property category.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Added macro for AppInstall() boilerplate code.</li>
+		<li>AppInstall() now fixes the defective client script "Update Name on Suffix Change" for sys_properties which adds "u_" to a scoped application's system property. The test "DevTools - Installation" verifies the fix.</li>
+		<li>Added the DevTools view for sys_notification_category to show all notifications as related lists.</li>
+		<li>Added ATF test "DevTools - Create and delete admin user" to verify that an admin user can be created and deleted. Some configurations prevent admin users from being deleted to ensure a minimum amount of admin users are available.</li>
+	</ol>	
+
+	<h3>1.75.1 - 2023-11-10</h3>
+	<ol>
+		<li>Added "navpage.do" to the patterns listed in IsPrimaryRequestUrl(). This resolves a defect that can be observed when the evaluator log error mechanism is active AND the system property "glide.entry.first.page.script" points to a function to be executed to determine the landing page after login.</li>
+	</ol>
+
+	
+	<h3>1.75.0 - 2023-11-09</h3>
+	<ol>
+		<li>Added function CreateTestUser().</li>
+		<li>Added UI action "Create Test User" on the sys_user table to create new test users. The UI action is only visible if the system property "x_snc_devtools.ui.createtestuser_button" is true (which is false by default).</li>
+		<li>Added function IsTestUser().</li>
+		<li>Added function InstallerAPI::ActivateNotification().</li>
+		<li>HttpRequest() now handles exceptions thrown by RESTMessageV2::execute().</li> 
+		<li>Clone() no longer produces the log message "ScopedRhinoObjectWrapper: not a wrappable type: com.glide.script.FieldGlideDescriptor".</li>
+		<li>The view rule to enforce the "DevTools" view on sys_app did not work. This has been fixed.</li>
+		<li>Removed specific view "DevTools App Log" and "DevTools Debug Log" - both menu items now use the "DevTools" view.</li>
+		<li>AppBuilder() now sets the "DevTools" for the "Log" menu item.</li>
+		<li>GetAllTables() removes most not needed "sys_" attributes from the result array to reduce memory consumption.</li>
+		<li>GetTableFromSysId() now also considers tables scan_result, sys_atf_test_result and sys_atf_test_suite_result as a priority and finds Sys IDs in these tables way faster.</li> 
+		<li>AppInstall() now deactivates yet another "Save" UI action to avoid duplicate "Save" buttons.</li>
+	</ol>	
+	
+	<h3>1.74.0 - 2023-10-30</h3>
+	<ol>
+		<li>The "Save" button now supports setting the global flag on sys_ui_script records directly. No more background script executions are required.</li>
+		<li>RenderValue() no longer produces the log message "ScopedRhinoObjectWrapper: not a wrappable type: com.glide.script.FieldGlideDescriptor".</li>
+		<li>Added sys_plugns to the link directory.</li>
+		<li>Fixed more defect in GetDependencyListFromTree() to cover scenarios where the same dependency shows up more than once in the dependency tree.</li>
+		<li>GetDependencyTreeErrorCount() now also considers the status summary.</li>
+	</ol>	
+	
+	<h3>1.73.0 - 2023-10-26</h3>
+	<ol>
+		<li>Fixed a defect in GetDependencyListFromTree() that caused the dependency status summary to be reported as "ok" in case of nested missing packages.</li>
+		<li>Added dependency status "incompatible_version" to CompareDependencyStatus().</li>
+		<li>A new business rule prevents duplicate dependencies to be added to an application.</li>
+		<li>Menu item "Query Log" no longer filters by log level.</li>
+		<li>Improved installation steps order.</li>
+	</ol>	
+	
+	<h3>1.72.0 - 2023-10-22</h3>
+	<ol>
+		<li>Added view rule to enforce the DevTools view on the sys_app form.</li>
+		<li>Added view rule to enforce the DevTools view on the sysauto_script form.</li>
+		<li>Added function RecordManageOrder().</li>
+		<li>Added function GlideRecordRestoreLocation().</li>
+		<li>Added function CreateTechnicalUser().</li>
+		<li>Added function GetTableRecord().</li>
+		<li>TestAPI::Log() can now render objects and arrays directly.</li>
+		<li>RecordSetValue() - and subsequently InstallerAPI::RecordSetValue() - can now work on sys_number records properly.</li>
+		<li>Added more urls to IsPrimaryRequestUrl() which have been identified in Vancouver.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>AppSetDefaults() now sets the logging.verbosity system property to "debug".</li>
+		<li>Added UI Script LogError().</li>
+		<li>UI Script ServerRequest() now detects the use of the parameter "name" which is not supported since the "name" parameter must contain the function of the client callable script include to be executed.</li>
+		<li>The UI action "Generate and Send Credentials" is no longer available for technical users.</li>
+		<li>Added UI action "Create Technical User" on the sys_user table to create new technical users. The UI action is only visible if the system property "x_snc_devtools.ui.createtechnicaluser_button" is true (which is false by default).</li>
+		<li>DocumentationAPI::RenderDescription() now supports line breaks.</li>
+		<li>Improved the DevTools view for the sys_app form, added "Claimed Global App Files" related list.</li>
+		<li>Improved the DevTools view for the sysauto_script form.</li>
+		<li>WhatRuns() now considers the order of sysrule_view records.</li>
+		<li>Added DevTools view for sys_ui_bookmark_group that contains the bookmarks related list.</li>
+		<li>Added functionality that allows to create cross-scope sysrule_view records.</li>
+	</ol>	
+	
+	<h3>1.71.0 - 2023-10-06</h3>
+	<ol>
+		<li>Tokyo is no longer actively supported.</li>
+		<li>DevTools is fully tested with Vancouver.</li>
+		<li>MakeUserName() now considers test and technical users and builds their names according to the naming convention documented in the whitepaper "A mature development and deployment process".</li>
+		<li>UI Script Clone() now also handles arrays.</li>
+		<li>GetValue() and UI script GetValue() now supports 10 parameters.</li>
+		<li>SetValue() and UI script SetValue() now supports 10 parameters.</li>
+		<li>Introduced InstallerAPI::DictionarySetValue() to modify sys_dictionary records.</li> 
+		<li>DocumentationAPI constructor now also accepts sys_app records and scope names (like GetAppRecord()).</li>
 		<li>GetEvaluatorErrorExceptionPatterns() is now accessible to all scopes.</li>
 		<li>Created script macro for GetEvaluatorErrorExceptionPatterns().</li>
 		<li>Added more evaluator log exception patterns in GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Added ATF test for DocumentationAPI.</li>
 	</ol>	
 	
 	<h3>1.70.0 - 2023-09-27</h3>
@@ -1475,13 +1761,13 @@ gs.invalidateCache();
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2020-02-27 11:17:42</sys_created_on>
         <sys_id>e44fd7541b578450a89720a8ec4bcb8c</sys_id>
-        <sys_mod_count>1357</sys_mod_count>
+        <sys_mod_count>1560</sys_mod_count>
         <sys_name>manual</sys_name>
         <sys_package display_value="DevTools WORK IN PROGRESS" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="DevTools WORK IN PROGRESS">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_ui_page_e44fd7541b578450a89720a8ec4bcb8c</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2023-09-28 13:28:20</sys_updated_on>
+        <sys_updated_on>2024-03-31 10:12:53</sys_updated_on>
     </sys_ui_page>
 </record_update>

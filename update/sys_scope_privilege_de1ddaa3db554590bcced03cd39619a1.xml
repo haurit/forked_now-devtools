@@ -16,7 +16,7 @@
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2022-02-02 07:26:40</sys_updated_on>
         <target_name>sn_me_static_media_section</target_name>
-        <target_scope display_value="ServiceNow NowMobile App Screens and Applet Launcher">5cfbdaac77eb2300454792718a106157</target_scope>
+        <target_scope display_value="Now Mobile">5cfbdaac77eb2300454792718a106157</target_scope>
         <target_type>sys_db_object</target_type>
     </sys_scope_privilege>
 </record_update>

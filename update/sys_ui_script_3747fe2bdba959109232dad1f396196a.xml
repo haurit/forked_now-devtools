@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Displays a modal dialog with "OK" and "Cancel" options. Returns true if the user clicks "OK", false if the user clicks on "Cancel".</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.DoModalConfirm</name>
         <script><![CDATA[function DoModalConfirm(strTitle, strText, callbackResult)
 {
@@ -77,5 +78,6 @@
         <sys_updated_on>2022-09-16 23:50:28</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

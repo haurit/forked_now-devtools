@@ -12,7 +12,6 @@ With a failure timeout of 5 Seconds</description>
         <mugshots_cache_json/>
         <notes>Check if ALICE is a member of ALPHA</notes>
         <order>7</order>
-        <snapshot/>
         <step_config display_value="Record Query (Deprecated)">0270b8005f30220012b44adb7f46666a</step_config>
         <sys_class_name>sys_atf_step</sys_class_name>
         <sys_created_by>admin</sys_created_by>

@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Render any value as a string. In case of objects, the keys are displayed in alphabetical order. In case of arrays, the elements are displayed in the given order.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.RenderValue</name>
         <script><![CDATA[function RenderValue(vValue, bHideEmpty, bUnsortedKeys, nLevel)
 {
@@ -191,5 +192,6 @@
         <sys_updated_on>2022-05-03 17:24:39</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

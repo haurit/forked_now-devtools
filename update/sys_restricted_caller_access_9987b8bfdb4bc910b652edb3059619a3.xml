@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_restricted_caller_access">
     <sys_restricted_caller_access action="INSERT_OR_UPDATE">
+        <description/>
         <operation>execute</operation>
+        <rca_type/>
         <source>c48dbb74dbd2cd10b652edb3059619ed</source>
         <source_scope display_value="Parcel WORK IN PROGRESS">bd2d377cdb92cd10b652edb305961975</source_scope>
         <source_table>sys_script_include</source_table>

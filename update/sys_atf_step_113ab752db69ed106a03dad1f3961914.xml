@@ -9,7 +9,6 @@
         <mugshots_cache_json/>
         <notes/>
         <order>3</order>
-        <snapshot/>
         <step_config display_value="DevTools - Check scoped app sanity">786a921f1b6c2090a89720a8ec4bcbc9</step_config>
         <sys_class_name>sys_atf_step</sys_class_name>
         <sys_created_by>admin</sys_created_by>

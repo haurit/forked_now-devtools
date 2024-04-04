@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Merges two objects or arrays.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.Merge</name>
         <script><![CDATA[function Merge(vValue1, vValue2)
 {
@@ -69,5 +70,6 @@
         <sys_updated_on>2022-01-06 15:44:20</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

@@ -3,7 +3,7 @@
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>sequence</element>
-            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="6bac0494dbdc1c90ba15a353059619db">5aed5279978a6510a6a07767f053af17</list_id>
+            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="a3df15dbdbe40e10f0f1d03cd396190f">5aed5279978a6510a6a07767f053af17</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>0</position>
@@ -18,7 +18,7 @@
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>sys_scope</element>
-            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="6bac0494dbdc1c90ba15a353059619db">5aed5279978a6510a6a07767f053af17</list_id>
+            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="a3df15dbdbe40e10f0f1d03cd396190f">5aed5279978a6510a6a07767f053af17</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>1</position>
@@ -33,7 +33,7 @@
         <sys_ui_list_element action="INSERT_OR_UPDATE">
             <average_value>false</average_value>
             <element>message</element>
-            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="6bac0494dbdc1c90ba15a353059619db">5aed5279978a6510a6a07767f053af17</list_id>
+            <list_id display_value="syslog_app_scope" element="NULL" name="syslog_app_scope" parent="NULL" relationship="NULL" sys_domain="global" view="a3df15dbdbe40e10f0f1d03cd396190f">5aed5279978a6510a6a07767f053af17</list_id>
             <max_value>false</max_value>
             <min_value>false</min_value>
             <position>2</position>
@@ -70,7 +70,7 @@
             <sys_updated_by>admin</sys_updated_by>
             <sys_updated_on>2023-04-07 20:10:15</sys_updated_on>
             <sys_user/>
-            <view display_value="DevTools Debug Log" name="devtoolsdebuglog">6bac0494dbdc1c90ba15a353059619db</view>
+            <view display_value="DevTools Debug Log" name="devtoolsdebuglog">a3df15dbdbe40e10f0f1d03cd396190f</view>
             <view_name/>
         </sys_ui_list>
     </sys_ui_list>

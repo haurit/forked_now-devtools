@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Displays a modal dialog with with a text input field. Returns the value that is entered by the user.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.DoModalPrompt</name>
         <script><![CDATA[function DoModalPrompt(strTitle, strText, strDefaultValue, callbackResult)
 {
@@ -79,5 +80,6 @@
         <sys_updated_on>2022-09-16 23:53:50</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

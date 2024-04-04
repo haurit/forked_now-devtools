@@ -10,7 +10,6 @@
         <mugshots_cache_json/>
         <notes/>
         <order>1</order>
-        <snapshot/>
         <step_config display_value="DevTools - Check test data sanity">da7ede081b9a34505331b8449b4bcb00</step_config>
         <sys_class_name>sys_atf_step</sys_class_name>
         <sys_created_by>admin</sys_created_by>

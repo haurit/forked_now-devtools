@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Parses a the URL parameters and returns the parameters as an object.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.ParseUrlParameters</name>
         <script><![CDATA[function ParseUrlParameters(strUrlParameters)
 {
@@ -47,5 +48,6 @@
         <sys_updated_on>2022-05-03 17:33:36</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

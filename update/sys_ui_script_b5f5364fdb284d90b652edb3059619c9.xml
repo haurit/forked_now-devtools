@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Returns an array no matter what input type is given and performs necessary conversion if another type is provided.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.GetArrayValue</name>
         <script><![CDATA[function GetArrayValue(vValue)
 {
@@ -48,5 +49,6 @@
         <sys_updated_on>2021-12-25 13:11:59</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

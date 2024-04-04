@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_restricted_caller_access">
     <sys_restricted_caller_access action="INSERT_OR_UPDATE">
+        <description/>
         <operation>execute</operation>
+        <rca_type/>
         <source>1eb2ad111b5401d0edf3642aab4bcb3d</source>
         <source_scope/>
         <source_table>sys_script_include</source_table>

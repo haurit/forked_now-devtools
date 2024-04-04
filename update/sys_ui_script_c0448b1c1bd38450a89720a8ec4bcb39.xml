@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Produces a debug output.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.Debug</name>
         <script><![CDATA[function Debug(strText)
 {
@@ -24,5 +25,6 @@
         <sys_updated_on>2021-12-20 14:33:59</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

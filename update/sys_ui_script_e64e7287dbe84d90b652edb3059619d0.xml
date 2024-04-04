@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Returns true if the given value is an object. False if not.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.IsObject</name>
         <script><![CDATA[function IsObject(vInput)
 {
@@ -34,5 +35,6 @@
         <sys_updated_on>2021-12-25 13:47:56</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

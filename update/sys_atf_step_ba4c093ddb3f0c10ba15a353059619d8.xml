@@ -11,7 +11,6 @@ With a failure timeout of 5 Seconds</description>
         <mugshots_cache_json/>
         <notes/>
         <order>2</order>
-        <snapshot/>
         <step_config display_value="Record Query (Deprecated)">0270b8005f30220012b44adb7f46666a</step_config>
         <sys_class_name>sys_atf_step</sys_class_name>
         <sys_created_by>admin</sys_created_by>
@@ -87,4 +86,5 @@ With a failure timeout of 5 Seconds</description>
         <value>messageSTARTSWITHDevTools - Test - Hello World^sys_created_on&gt;=javascript:gs.beginningOfLastMinute()^EQ</value>
         <variable display_value="Conditions">cf167c405f30220012b44adb7f46660d</variable>
     </sys_variable_value>
+    <sys_element_mapping action="delete_multiple" query="table=var__m_atf_input_variable_0270b8005f30220012b44adb7f46666a^id=ba4c093ddb3f0c10ba15a353059619d8"/>
 </record_update>

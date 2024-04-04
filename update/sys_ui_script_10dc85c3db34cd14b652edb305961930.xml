@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Returns an array with unique values only.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.ArrayUnique</name>
         <script><![CDATA[function ArrayUnique(vInput)
 {
@@ -38,5 +39,6 @@
         <sys_updated_on>2022-01-06 15:47:56</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>

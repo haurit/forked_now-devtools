@@ -3,6 +3,7 @@
         <active>true</active>
         <description>Checks if two values are equal. The function also supports arrays and can ignore the order of array elements while comparing.</description>
         <global>true</global>
+        <ignore_in_now_experience>false</ignore_in_now_experience>
         <name>x_snc_devtools.IsEqual</name>
         <script><![CDATA[function IsEqual(vValue1, vValue2, bIgnoreOrder)
 {
@@ -65,5 +66,6 @@
         <sys_updated_on>2021-12-25 13:46:38</sys_updated_on>
         <ui_type>0</ui_type>
         <use_scoped_format>false</use_scoped_format>
+        <x_snc_devtools_global>false</x_snc_devtools_global>
     </sys_ui_script>
 </record_update>
