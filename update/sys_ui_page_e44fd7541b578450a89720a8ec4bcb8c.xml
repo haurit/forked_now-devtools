@@ -30,7 +30,7 @@
 	<ul>
 		<g2:no_escape>$[
 			docapi.RenderSystemRequirements(
-				'Utah,Vancouver',
+				'Vancouver,Washington',
 				true,
 				AppGetDependencies());
 		]</g2:no_escape>	
@@ -84,7 +84,18 @@ gs.info('After DeleteAllData(): '+x_snc_devtools.RenderValue(testdata.GetAllData
 	<p>To enable cross scope scripting the system property&#160;<a href="/nav_to.do?uri=sys_properties.do?sys_id=9e52826587120300cf2d5fb736cb0b7f" target="_blank">glide.record.legacy_cross_scope_access_policy_in_script</a>&#160;must be set to true. As of the release of this DevTools version the only publicly accessible documentation of the system property's behaviour can be found in the knowledge base article&#160;<a href="https://support.servicenow.com/kb?id=kb_article_view&amp;sysparm_article=KB0779287" target="_blank">KB0779287</a>.</p>
 	
 	<h3>Baseline Application Version</h3>
-	<p>The "Baseline Version" button on the application form can be used to prepare an application to be baselined. To baseline an application means to provide a new version of an application from a development environment to downstream instances or for public availability. The function AppVersionBaseline() is executed to perform a number of cleanup tasks.</p>
+	<p>The "Baseline Version" button on the application form is used to baseline an application version. To baseline an application means to provide a new version of an application from a development environment in a linked source control system. This enables installation to downstream instances or for public availability. The following steps are performed:</p>
+	<ol>
+		<li>Check if there are yet uncommitted changes</li>
+		<li>Check if a branch named after the set version already exists</li>
+		<li>Sanitize the app (using the DevTools' AppSanity() function)</li>
+		<li>Set defaults (using the the app's AppSetDefaults() function if it exists)</li>
+		<li>Perform application specific baseline activities (using the app's AppBaseline() function if it exists)</li>
+		<li>Remove the postfix "WORK IN PROGRESS" from the application name</li>
+		<li>Create a new branch named after the set version</li>
+		<li>Increase the minor version</li>
+		<li>Add the postfix "WORK IN PROGRESS" to the application name</li>
+	</ol>
 	
 	<h3>Dependency Management</h3>
 	<p>In an ideal world all customizations are implemented in scoped apps (and some global scoped apps if there are really good reasons). And in that same ideal world, non of these apps have any dependencies. Each app can be installed and uninstalled independently. The real corporate world, however, is complex, messy and full of dependencies. For good reasons, separate capablities are implemented as separate apps and hence these apps have dependencies to each other. For example: apps add fields to tables that are defined in other apps, they run scripts from other apps, or rely on logic implemented in flows from other apps.</p>
@@ -160,7 +171,7 @@ grRecords.query();
 while (grRecords.next())
 {
 	// Pack the identified record into the package
-	x_snc_devtools.RecordTransporterRecordPack('x_your_scope.demo',grRecords));
+	x_snc_devtools.RecordTransporterRecordPack('x_your_scope.demo',grRecords);
 }
 		</pre>
 	</p>
@@ -177,6 +188,10 @@ function AppInstall()
 }
 		</pre>
 	</p>
+
+	<h3>CMDB CI Class "ServiceNow App"</h3>
+	<p>DevTools introduces a new CMDB CI class called "ServiceNow App" which represents a ServiceNow app (scoped or global) that is installed on an instance or provided in a Source Control System for installation.</p>
+	<p>Functions prefixed with "ConfigurationItemServiceNowApp" can be used to insert or update these CIs.</p>  
 	
 	<h3>Field Formatting</h3>
 	<p>DevTools can help to format (float) numbers in forms, related lists and list views in the classic UI - Polaris, however, is not supported yet! Follow these steps to activate the feature:</p>
@@ -254,20 +269,207 @@ function DevToolsGetFormatConfig(grRecord)
 	<g2:no_escape>$[docapi.RenderLicense()]</g2:no_escape>
 	
 	<h2>Release Notes</h2>
-	
-<!--
-	<h3>1.8_.0 - 2024-TODO</h3>
+
+	<h3>1.95.0 - 2024-07-06</h3>
 	<ol>
-		<li>TODO</li>
+		<li>Added function GetDetailsFromCredential() for better error handling and error logging in case credentials cannot be loaded.</li>
+		<li>Added function RenderCallStack().</li>
+		<li>Improved error handling in GetConnectionAndCredentialFromAlias().</li>
+		<li>CreateTechnicalUser() did not assign the requested role, instead the admin role was assigned. This has been fixed.</li>
+		<li>CreateTechnicalUser() now returns false and deletes the user right away if the requested role could not be assigned.</li>
+		<li>Added discovery_credentials, sys_connection and sys_alias to the link directory.</li>
 	</ol>
--->	
+
+
+	<h3>1.94.0 - 2024-07-04</h3>
+	<ol>
+		<li>Added function ConfigurationItemServiceNowAppInsertOrUpdateFromTree().</li>
+		<li>Added function ConfigurationItemServiceNowAppInsertOrUpdateFromList().</li>
+		<li>Added DevTools view for the CMDB CI ServiceNow App list view.</li>
+		<li>The name of a ServiceNow App CI is no longer truncated in list views.</li> 
+		<li>ConfigurationItemServiceNowAppInsertOrUpdate() now only adds custom applications (sys_app) to the CMDB.</li>
+		<li>GetPseudoSysId() now supports the bRandom parameter to return a random pseudo Sys ID.</li>
+		<li>InstallerAPI::DictionarySetValue() now displays a warning if the field "column_label" is set as that may not be sufficient to modify the text displayed in the GUI. The corresponding sys_documentation records (for multiple languages) may have to be set aswell.</li>
+		<li>Before baselining the user now has to confirm a message that can be configured via the system property "x_snc_devtools.baseline.message".</li>
+	</ol>
+
+
+	<h3>1.93.0 - 2024-07-03</h3>
+	<ol>
+		<li>Added method InstallerAPI::DictionaryOverrideSetValue().</li>
+		<li>Added method InstallerAPI::SetTableDefaultOrder().</li>
+		<li>Added function GetDictionaryOverrideRecord().</li>
+		<li>Added function GetBaseTable().</li>
+		<li>Added function SetAppInfo().</li>
+		<li>Added function MakeUrlParameters().</li>
+		<li>Added function GetAppRecordsWithCredentialPollution() and business rules on sys_app and sys_metadata to show a warning if polluted records are found.</li>
+		<li>The baseline procedure now checks if there are records with credential pollution and prevents baselining in that case.</li> 
+		<li>Added method DocumentationAPI::RenderConnectionAndCredentialAliases().</li>
+		<li>All DocumentationAPI::Render*() methods now render a text indicating that there are no records contained in the documented app.</li>
+		<li>Added function GetInstanceRecordUrl() as a replacement of the deprecated GetInstanceRecordURL().</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>AppBuilder() now prevents being used on global apps.</li>
+	</ol>
+
+
+	<h3>1.92.0 - 2024-06-29</h3>
+	<ol>
+		<li>HttpRequest() supports the value "response" as part of its input parameter object to control how the response of the request should be provided. If the response value is set to "RESTResponseV2" the function will return the RESTResponseV2 object if the request did not throw an exception.</li>
+		<li>Improved documentation of function HttpRequest().</li>
+		<li>Added more logic in business rule "sys_metadata - prevent useless checks" for table sc_cat_item (and derived tables).</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>GetParentRecord() and the "Up" button now support the "syntax_editor_macro" table. GetParentRecord() returns the script include with the exact same name in the same scope if it exists.</li>
+	</ol>
+
+
+	<h3>1.91.0 - 2024-06-21</h3>
+	<ol>
+		<li>Added function InstanceScanIsScriptCheck().</li>
+		<li>Added more logic in business rule "sys_metadata - prevent useless checks" for tables sys_data_source and sys_transform_entry.</li>
+		<li>InstanceScanGetCheckFromQuery() now detects variants of Instance Scan queries where "active=true" is not contained - thus enabling queries to load sys_data_source records.</li>
+		<li>GetDependencyListFromTree() can now manage the following scenario: Nested missing (more recent version) and non-missing dependency to the same app.</li>
+		<li>MaintainGroup() now also updates the additional values on an existing group.</li>
+		<li>MakeUserName() now converts all name components to strings to avoid runtime errors.</li>
+		<li>RecordTransporterRecordPack() now rejects packing sys_dictionary and sys_dictionary_override records as these may have differing Sys IDs on different instances.</li>
+		<li>InstallerAPI::RecordSetValue() now rejects working on sys_dictionary (or derived) and sys_dictionary_override records.</li>
+		<li>AppInstall() no longer sets the logging verbosity to "debug".</li>
+	</ol>
+
+
+	<h3>1.90.1 - 2024-06-16</h3>
+	<ol>
+		<li>Fixed a defect in MaintainGroup() that randomly prevented roles from being assigned to or deleted from the group.</li>
+		<li>Added parameter "values" to function MaintainGroup() so that the manager, email and description of the maintained group can also be set.</li>
+	</ol>
+
+
+	<h3>1.90.0 - 2024-06-15</h3>
+	<ol>
+		<li>Added function GetGroupRecord().</li>
+		<li>Added function GetRoleRecord().</li>
+		<li>Added function IsPersonaRole().</li>
+		<li>Added function MaintainGroup().</li>
+		<li>GetTableFromSysId() now also finds credential records in discovery_credentials and sys_connection quickly.</li>
+	</ol>
+
+
+	<h3>1.89.0 - 2024-06-08</h3>
+	<ol>
+		<li>The previous version (number) was intentionally skipped - as a statement against right wing extremism, racism, fascism and any anti-democratic sentiment.</li>
+		<li>Added new CMDB CI class: "ServiceNow App" (x_snc_devtools_cmdb_ci_appl_servicenow).</li>
+		<li>Added function ConfigurationItemServiceNowAppInsertOrUpdate().</li>
+		<li>Added function ConfigurationItemServiceNowAppInsertOrUpdateLocalApps().</li>
+		<li>Added method InstallerAPI::ChoiceInsertOrUpdate().</li>
+		<li>Added method InstallerAPI::DiscoverySourceInsertOrUpdate().</li>
+		<li>Adding "DevTools" as a discovery source in AppInstall().</li>
+		<li>The Dependency View page now also displays the raw data if the logging verbosity is set to "debug".</li>
+	</ol>
+
+
+	<h3>1.87.0 - 2024-06-05</h3>
+	<ol>
+		<li>Added function InstanceScanCheckScriptOnly().</li>
+		<li>Added method TestAPI::TestCase_InstanceScanCheckScriptOnly().</li>
+	</ol>
+
+
+	<h3>1.86.0 - 2024-06-03</h3>
+	<ol>
+		<li>GitHubAPI::GetBranchesFromRepo() can now handle repositories with more than 100 branches.</li>
+		<li>GitLabAPI::GetBranchesFromRepo() can now handle repositories with more than 100 branches.</li>
+		<li>Added function StringReplaceMultiple().</li>
+		<li>Added function GetDictionaryRecord().</li>
+		<li>GetScriptRecord() now returns the GlideRecord object that contains the script from which GetScriptRecord() is called or if nStackLevel is greater than 0, the record that contains the script that contains the code of the corresponding stack level.</li>
+		<li>IsTestUser() is now more strict and checks if the User ID (user_name) starts with "test.".</li>
+		<li>IsTechnicalUser() is now more strict and checks the exact naming convention from the whitepaper.</li>
+		<li>TestDataAPI::CreateUser() now also supports the exact naming convention for technical users.</li>
+		<li>The DevTools view for sys_app now contains the "Versions" related list.</li>
+		<li>CompareDependencyStatus() now supports all relevant dependency status values.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Added more logic in business rule "sys_metadata - prevent useless checks" for tables catalog_ui_policy and item_option_new.</li>
+		<li>AppSanity() now cleans up item_option_new "save_script" fields.</li>
+		<li>The ATF test for AppSetRepo() failed if DevTools was not connected to a repository. this has been fixed.</li>
+		<li>The ATF test for GetInstanceUrl() now fails if glide.servlet.uri is not configured properly for the instance.</li>
+		<li>AppSanity() now uses GetAppRecord() and hence allows more parameter types.</li>
+		<li>InstallerAPI::DictionarySetValue() and TableColumnSetAttribute() now use GetDictionaryRecord().</li>
+	</ol>
+
+
+	<h3>1.85.0 - 2024-04-05</h3>
+	<ol>
+		<li>GetRecord() now also supports parent tables.</li>
+	</ol>
+
+
+	<h3>1.84.0 - 2024-03-31</h3>
+	<ol>
+		<li>The "Application Overview" page now also displays links to manual pages in global applications.</li>
+		<li>The "Version Baseline" button now also checks if there is a proper section in the "Release Notes" in the application manual before the actual baseline process is started.</li>
+		<li>AppVersionBaseline() now adds a new section in the manual "Release Notes" section (if it exists).</li>
+		<li>Added ArrayIntersection().</li>
+		<li>Added function GetAppManualRecord().</li>
+		<li>Added function AppVersionBaselineCheckReleaseNotes().</li>
+		<li>Added function SetValueIncrement().</li>
+		<li>Added UI Script GetTimeNow().</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+	</ol>
+
+	<h3>1.83.0 - 2024-03-08</h3>
+	<ol>
+		<li>Utah is no longer actively supported.</li>
+		<li>DevTools is fully tested in Washington.</li>
+		<li>The "Baseline Version" UI Action now really triggers the full-features application baseline procedure!</li> 
+		<li>Added link to an application's dependencies to the application overview page.</li>
+		<li>On the application overview page, the link to the manual page now loads with the navigation.</li>
+		<li>On the application overview page, the current branch now links to the repository.</li>
+		<li>The Dependency Tree view now displays the package class name for packages other than custom applications.</li> 
+		<li>InstallApp() now checks if any of the packages is not installed and returns an error in that case.</li>
+		<li>Added function GetAppUncommittedFiles().</li>
+		<li>Added function WaitForWorker().</li>
+		<li>Added function SourceControlCommitToCurrentBranch().</li>
+		<li>Added function SourceControlCreateBranch().</li>
+		<li>Added function SourceControlSwitchToBranch().</li>
+		<li>Added function AppVersionBaselineIsRunning().</li>
+		<li>Added function GetAppBranches().</li>
+		<li>UI Script function GetParameter() is deprecated and replaced by function GetParam().</li>
+		<li>Added UI Script function GetCurrentUrl().</li>
+		<li>Added method InstallerAPI::DocumentationSetValue() to set values in sys_documentation records.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>The UI Action "Baseline Version" is now only displayed on the application form if the application is linked to source control.</li>
+		<li>The UI action "Baseline Version" is only visible if the newly introduced system property "x_snc_devtools.ui.baseline_button" is true.</li>
+		<li>Improved ATF for ParseJson().</li>
+		<li>The UI Scripts GetInstanceRecordPath(), GetInstanceRecordUri(), GetInstanceNewRecordPath() and GetInstanceNewRecordUri() now support the "params" parameter to supply additonal parameters to the url.</li>
+		<li>The UI Script ServerRequest() now detects if the response from the server is null and shows an error message indicating that this may be caused by a server error which may not be logged.</li>
+	</ol>
+	
+	<h3>1.82.0 - 2024-02-29</h3>
+	<ol>
+		<li>Added function IsPolaris().</li>
+		<li>Added UI Script Reload().</li>
+		<li>Added UI Script IsFormDirty().</li>
+		<li>Added function IsClonedDictionary().</li>
+		<li>Added function StringMatchRegEx().</li>
+		<li>WhatRuns() now also supports Data Policies.</li>
+		<li>InstallApp() now only runs installation scripts (AppInstall) contained in custom applications.</li>
+		<li>InstallApp() no longer tries to execute inactive AppInstall() scripts.</li>
+		<li>HtmlRenderRoundedBox() is now fully aware of Polaris default and dark themes and U16 color schemes.</li> 
+		<li>GetTableFromSysId() now handles sys_documentation records properly.</li>
+		<li>GenerateAndSendCredentialsToUser() now returns false if the user record cannot be updated. This is the case if a user without security_admin priviliges tries to generate and send credentials for another security_admin user.</li>
+		<li>Added more patterns to GetEvaluatorErrorExceptionPatterns().</li>
+		<li>Added better logic to the business rule "sys_metadata - prevent useless checks" to avoid unnecessarily scanning any record in sys_dictionary or any derived table.</li>
+		<li>GetParam() now also checks gs.action for parameters.</li>
+		<li>Added function GetRecordUri() as a replacement of the deprecated GetInstanceRecordURI().</li>
+		<li>Added link to application log to the application overview page.</li>
+		<li>Added DevTools view for cmn_map_page.</li>
+		<li>Added DevTools view for sys_ui_policy.</li>
+	</ol>	
 	
 	<h3>1.81.0 - 2024-02-06</h3>
 	<ol>
 		<li>Added function GetAppDefaultTestSuite().</li>
 		<li>The application list ui page now also contains the link to the applications' default test suite if it exists.</li>
 		<li>Added UI Action "Go to Test Suite" to navigate to an application's default test suite from the application form if the test suite exists.</li>
-		<li>Fixed a defect in ScriptremoveComments() that prevented multiple block comments to be removed properly.</li>
+		<li>Fixed a defect in ScriptRemoveComments() that prevented multiple block comments to be removed properly.</li>
 		<li>Improved test cases for ScriptRemoveComments().</li>
 		<li>UI Actions "Create User By Email", "Create Technical User" and "Create Test User" sometimes did not show. This has been fixed. The UI Actions are now associated with the sys_user table directly and no longer use current.getRecordClassName() in the condition statement. current.getRecordClassName() returns the class name of the first displayed element in a list view instead of the table being displayed (which is at least questionable behaviour).</li> 
 	</ol>	
@@ -644,7 +846,7 @@ while (grDept.next())
 		<li>Added function Base64Decode().</li>
 		<li>Added function Base64Encode().</li>
 		<li>Added function InstallerAPI::InsertFieldToFormSection() and updated AppInstall() accordingly.</li>
-		<li>AppBuilder() now longer creates code to set the removed log.active property in AppSetDefaults().</li>
+		<li>AppBuilder() no longer creates code to set the removed log.active property in AppSetDefaults().</li>
 		<li>The Dependency Viewer now keeps hiding packages when using the tab navigation.</li>
 		<li>Improved links in DocumentationAPI functions and in the manual.</li>
 		<li>GetCleanAppName() now also trims the name to avoid leading or trailing whitespaces.</li>
@@ -696,7 +898,7 @@ while (grDept.next())
 		<li>InstanceScanSuiteOnApp() now also accepts different parameter types to specify the app (same as GetAppRecord).</li> 
 		<li>GetType() can now deal with objects that return null.</li>
 		<li>Functions RenderValue() and Clone() can now deal with objects that do not have a default value (like "wiki" GlideElement fields as used in kb_knowledge).</li>
-		<li>AppBuilder() now longer adds the call to x_snc_devtools.AppInstall() in the AppInstall() function - dependency installation should be handled via InstallApp().</li>
+		<li>AppBuilder() no longer adds the call to x_snc_devtools.AppInstall() in the AppInstall() function - dependency installation should be handled via InstallApp().</li>
 		<li>Function AppBuilderAddSyntaxEditorMacro() is now available for all scopes. Added ATF test and syntax edit macro for the function. Added more robust parameter validation.</li>
 		<li>Function GetPackageDependencyList() now also includes circular dependency packages. And the Dependency Viewer shows the circular dependencies in the "List" view.</li>
 		<li>Function InstallApp() now returns false of circular dependencies are detected.</li>
@@ -999,7 +1201,7 @@ while (grDept.next())
 		<li>AppBuilder() now creates the system property "logging.verbosity" for the application and the created AppSetDefaults() functions sets the property to "info" by default.</li>
 		<li>The "Save" UI action no longer shows on the "Many to Many Definition" form.</li>
 		<li>GetParentRecord() can now properly handle sys_choice records that refer to sys_dictionary entries of a parent table.</li>
-		<li>The manual template now longer contains Quebec as a supported platform version.</li>
+		<li>The manual template no longer contains Quebec as a supported platform version.</li>
 		<li>Added table sys_filter_option_dynamic to the link directory.</li>
 		<li>Added tables label and label_entry to the link directory.</li>
 	</ol>
@@ -1480,7 +1682,7 @@ gs.invalidateCache();
 	
 	<h3>1.15.0 - 2021-05-05</h3>
 	<ol>
-		<li>WARNING: New York is now longer actively supported.</li>
+		<li>WARNING: New York is no longer actively supported.</li>
 		<li>Added function IsTechnicalUser() to check if a given user is a technical user (i.e. web_service_access_only is set to true).</li>
 		<li>Added function IsProperty() to check if a given system property exists.</li>
 		<li>Added function AppSetProperty() to set a DevTools system property to a value.</li> 
@@ -1688,13 +1890,13 @@ gs.invalidateCache();
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2020-02-27 11:17:42</sys_created_on>
         <sys_id>e44fd7541b578450a89720a8ec4bcb8c</sys_id>
-        <sys_mod_count>1502</sys_mod_count>
+        <sys_mod_count>1650</sys_mod_count>
         <sys_name>manual</sys_name>
         <sys_package display_value="DevTools" source="x_snc_devtools">d689f6901bd38450a89720a8ec4bcbfd</sys_package>
         <sys_policy/>
         <sys_scope display_value="DevTools">d689f6901bd38450a89720a8ec4bcbfd</sys_scope>
         <sys_update_name>sys_ui_page_e44fd7541b578450a89720a8ec4bcb8c</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-02-06 13:45:05</sys_updated_on>
+        <sys_updated_on>2024-07-06 18:18:39</sys_updated_on>
     </sys_ui_page>
 </record_update>
